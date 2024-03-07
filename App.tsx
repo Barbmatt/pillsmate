@@ -1,70 +1,45 @@
-import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View, Button } from "react-native";
-import { Calendar, DateData } from "react-native-calendars";
-import { MarkedDates } from "react-native-calendars/src/types";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Button, PaperProvider, Text } from "react-native-paper";
+import PillCalendar from "./UI Components/Calendar";
+import PlaceboDays from "./UI Components/PlaceboDays";
+import Time from "./UI Components/Time";
 
 export default function App() {
-  const [selectedStartingDay, setSelectedStartingDay] = useState<string>("");
-  const [selectedEndingDay, setSelectedEndingDay] = useState<string>("");
-  const [modifyStartDate, setModifyStartDate] = useState<boolean>(true);
-
-  const setPeriod = (selectedDay: DateData) => {
-    if (modifyStartDate) {
-      setSelectedStartingDay(selectedDay.dateString);
-      setSelectedEndingDay("");
-      setModifyStartDate(false);
-    } else {
-      if (selectedStartingDay >= selectedDay.dateString) {
-        setSelectedEndingDay(selectedStartingDay);
-        setSelectedStartingDay(selectedDay.dateString);
-      } else setSelectedEndingDay(selectedDay.dateString);
-      setModifyStartDate(true);
-    }
-  };
-
-  const completePeriod = (): MarkedDates => {
-    const middleDates: MarkedDates = {};
-    let date = new Date(new Date(selectedStartingDay).getTime() + 86400000);
-    let endDate = new Date(selectedEndingDay);
-    while (date < endDate) {
-      middleDates[date.toISOString().substring(0, 10)] = { color: "lightblue" };
-      date = new Date(date.getTime() + 86400000);
-    }
-    return middleDates;
-  };
-
-  const middleDates: MarkedDates =
-    selectedEndingDay !== "" ? completePeriod() : {};
+  const [showTime, setShowTime] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <PaperProvider>
       <Text style={styles.header}>Pillsmate</Text>
-      <Text>Mark the period for the next blister:</Text>
-      <Calendar
-        markingType={"period"}
-        onDayPress={(selectedDay) => setPeriod(selectedDay)}
-        markedDates={{
-          [selectedStartingDay]: { startingDay: true, color: "lightblue" },
-          ...middleDates,
-          [selectedEndingDay]: { endingDay: true, color: "lightblue" },
-        }}
-      ></Calendar>
-      <Button title="Add new pill"></Button>
-      <StatusBar style="auto" />
-    </View>
+      <View style={styles.container}>
+        <Text variant="bodyLarge">Mark the period for the next blister:</Text>
+        <PillCalendar></PillCalendar>
+        <PlaceboDays></PlaceboDays>
+        <Button onPress={() => setShowTime(true)}>Set Time</Button>
+        <Button onPress={() => console.log("pn")}>Save Pill Calendar</Button>
+        {showTime ? (
+          <Time
+            onDismiss={() => setShowTime(false)}
+            onConfirm={() => setShowTime(false)}
+          ></Time>
+        ) : null}
+        <StatusBar style="auto" />
+      </View>
+    </PaperProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    marginLeft: 10,
     flex: 1,
     backgroundColor: "#fff",
   },
   header: {
     flex: 1,
-    backgroundColor: "violet",
-    marginTop: 35,
+    backgroundColor: "#f898b0",
+    marginTop: 45,
     fontSize: 35,
     maxHeight: 60,
   },
