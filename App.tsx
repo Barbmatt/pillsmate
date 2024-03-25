@@ -1,31 +1,68 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { SafeAreaView, StyleSheet, View } from "react-native";
 import { Button, PaperProvider, Text } from "react-native-paper";
-import PillCalendar from "./UI Components/Calendar";
-import PlaceboDays from "./UI Components/PlaceboDays";
-import Time from "./UI Components/Time";
+import NewPillForm from "./NewPillForm";
+import Storage from "./Storage";
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import PillCard from "./UI Components/PillCard";
 
-export default function App() {
-  const [showTime, setShowTime] = useState(false);
+type pill = {
+  name: string;
+  id: number;
+  hours: number;
+  minutes: number;
+  selectedStartingDay: string;
+  selectedEndingDay: string;
+};
+
+function Home() {
+  const insets = useSafeAreaInsets();
+  const [displayForm, setDisplayForm] = useState(false);
+  const [displayCards, setDisplayCards] = useState(false);
+  const [pillData, setPillData] = useState<pill>({
+    name: "",
+    id: 0,
+    hours: 9,
+    minutes: 0,
+    selectedStartingDay: "",
+    selectedEndingDay: "",
+  });
+
+  const displayPillCards = () => {
+    Storage.load({ key: "pill2" }).then((pillData) => setPillData(pillData));
+    setDisplayCards(true);
+  };
 
   return (
-    <PaperProvider>
+    <View style={{ paddingTop: insets.top }}>
       <Text style={styles.header}>Pillsmate</Text>
-      <View style={styles.container}>
-        <Text variant="bodyLarge">Mark the period for the next blister:</Text>
-        <PillCalendar></PillCalendar>
-        <PlaceboDays></PlaceboDays>
-        <Button onPress={() => setShowTime(true)}>Set Time</Button>
-        <Button onPress={() => console.log("pn")}>Save Pill Calendar</Button>
-        {showTime ? (
-          <Time
-            onDismiss={() => setShowTime(false)}
-            onConfirm={() => setShowTime(false)}
-          ></Time>
-        ) : null}
-        <StatusBar style="auto" />
-      </View>
+      {displayForm ? (
+        <NewPillForm onClose={() => setDisplayForm(false)}></NewPillForm>
+      ) : (
+        <View>
+          <Button onPress={() => setDisplayForm(true)}>Add New Pill</Button>
+          <Button onPress={displayPillCards}>Get Pill</Button>
+          {displayCards ? (
+            <PillCard
+              onClose={() => setDisplayCards(false)}
+              pillData={pillData}
+            ></PillCard>
+          ) : null}
+        </View>
+      )}
+    </View>
+  );
+}
+
+export default function App() {
+  return (
+    <PaperProvider>
+      <SafeAreaProvider>
+        <Home></Home>
+      </SafeAreaProvider>
     </PaperProvider>
   );
 }
@@ -33,13 +70,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     marginLeft: 10,
-    flex: 1,
     backgroundColor: "#fff",
   },
   header: {
-    flex: 1,
     backgroundColor: "#f898b0",
-    marginTop: 45,
     fontSize: 35,
     maxHeight: 60,
   },

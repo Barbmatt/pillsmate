@@ -1,9 +1,12 @@
-import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { IconButton, PaperProvider, TextInput, Text } from "react-native-paper";
+import { IconButton, Text } from "react-native-paper";
 
-export default function PlaceboDays() {
-  const [placeboDays, setPlaceboDays] = useState(0);
+type props = {
+  setPlaceboDays: (p: number) => void;
+  placeboDays: number;
+};
+
+export default function PlaceboDays({ setPlaceboDays, placeboDays }: props) {
   return (
     <View style={styles.placeboDaysArea}>
       <Text variant="bodyLarge">Placebo days:</Text>
