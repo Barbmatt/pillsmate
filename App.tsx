@@ -8,6 +8,8 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import PillCard from "./UI Components/PillCard";
+import { completePeriod } from "./Utils/CalculateMiddleDates";
+import Notification from "./UI Components/Notification";
 
 type pill = {
   name: string;
@@ -16,6 +18,8 @@ type pill = {
   minutes: number;
   selectedStartingDay: string;
   selectedEndingDay: string;
+  placeboDays: number;
+  notificationId: string;
 };
 
 function Home() {
@@ -29,12 +33,17 @@ function Home() {
     minutes: 0,
     selectedStartingDay: "",
     selectedEndingDay: "",
+    placeboDays: 0,
+    notificationId: "",
   });
 
-  const displayPillCards = () => {
-    Storage.load({ key: "pill2" }).then((pillData) => setPillData(pillData));
-    setDisplayCards(true);
-  };
+  Storage.load({ key: "pill2" }).then((pillData) => setPillData(pillData));
+
+  const middleDates = completePeriod(
+    pillData.selectedStartingDay,
+    pillData.selectedEndingDay,
+    pillData.placeboDays
+  );
 
   return (
     <View style={{ paddingTop: insets.top }}>
@@ -44,13 +53,18 @@ function Home() {
       ) : (
         <View>
           <Button onPress={() => setDisplayForm(true)}>Add New Pill</Button>
-          <Button onPress={displayPillCards}>Get Pill</Button>
-          {displayCards ? (
-            <PillCard
-              onClose={() => setDisplayCards(false)}
-              pillData={pillData}
-            ></PillCard>
-          ) : null}
+          {pillData.name !== "" ? (
+            <View>
+              <PillCard
+                onClose={() => setDisplayCards(false)}
+                pillData={pillData}
+                middleDates={middleDates}
+              ></PillCard>
+              <Notification pillData={pillData}></Notification>
+            </View>
+          ) : (
+            <Text>"There are any pills configured"</Text>
+          )}
         </View>
       )}
     </View>

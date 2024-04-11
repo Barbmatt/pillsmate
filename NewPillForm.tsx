@@ -27,14 +27,12 @@ export default function NewPillForm(props: props) {
     minutes,
     selectedStartingDay,
     selectedEndingDay,
+    placeboDays,
+    notificationId: "",
   };
 
   const SavePillCalendar = () => {
-    console.log("hours" + hours);
     Storage.save({ key: "pill2", data: pill });
-    Storage.load({ key: "pill2" }).then((pillData) =>
-      console.log("hafgda" + pillData.hour)
-    );
     props.onClose();
   };
 

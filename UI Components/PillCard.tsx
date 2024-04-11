@@ -9,6 +9,7 @@ import {
   IconButton,
 } from "react-native-paper";
 import Storage from "../Storage";
+import { MarkedDates } from "react-native-calendars/src/types";
 
 type pill = {
   name: string;
@@ -17,14 +18,16 @@ type pill = {
   minutes: number;
   selectedStartingDay: string;
   selectedEndingDay: string;
+  placeboDays: number;
 };
 
 type props = {
   onClose: () => void;
   pillData: pill;
+  middleDates: MarkedDates;
 };
 
-export default function PillCard({ onClose, pillData }: props) {
+export default function PillCard({ onClose, pillData, middleDates }: props) {
   return (
     <View>
       <Card>
@@ -33,14 +36,16 @@ export default function PillCard({ onClose, pillData }: props) {
           size={20}
           onPress={() => onClose()}
         ></IconButton>
-        <Card.Content>
+        <Card.Content style={style.cardheader}>
           <Text variant="titleLarge">{pillData.name}</Text>
-          <Text variant="bodyMedium">
+          <Text style={style.hour}>
             {pillData.hours.toString().padStart(2, "0") +
               ":" +
               pillData.minutes.toString().padStart(2, "0") +
               " hs"}
           </Text>
+        </Card.Content>
+        <Card.Content>
           <Calendar
             markingType="period"
             markedDates={{
@@ -48,10 +53,10 @@ export default function PillCard({ onClose, pillData }: props) {
                 startingDay: true,
                 color: "lightblue",
               },
-
+              ...middleDates,
               [pillData.selectedEndingDay]: {
                 endingDay: true,
-                color: "lightblue",
+                color: pillData.placeboDays !== 0 ? "pink" : "lightblue",
               },
             }}
           ></Calendar>
@@ -60,3 +65,14 @@ export default function PillCard({ onClose, pillData }: props) {
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  cardheader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  hour: {
+    fontSize: 18,
+  },
+});
