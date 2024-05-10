@@ -1,4 +1,6 @@
 import { MarkedDates } from "react-native-calendars/src/types";
+import { DateData } from "react-native-calendars";
+import { usePillDataDispatch } from "../context/PillDataContext";
 
 export const completePeriod = (
   selectedStartingDay: string,
@@ -16,6 +18,7 @@ export const completePeriod = (
     };
     date = new Date(date.getTime() + 86400000);
   }
+
   let endPeriodDate = new Date(selectedEndingDay);
   while (date < endPeriodDate) {
     middleDates[date.toISOString().substring(0, 10)] = {
@@ -24,4 +27,8 @@ export const completePeriod = (
     date = new Date(date.getTime() + 86400000);
   }
   return middleDates;
+};
+
+export const markedDatesToArray = (marked: MarkedDates) => {
+  return Object.keys(marked).map((m) => new Date(m));
 };

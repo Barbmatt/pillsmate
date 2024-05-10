@@ -1,33 +1,26 @@
 import React from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { Calendar } from "react-native-calendars";
-import {
-  Button,
-  PaperProvider,
-  Text,
-  Card,
-  IconButton,
-} from "react-native-paper";
-import Storage from "../Storage";
 import { MarkedDates } from "react-native-calendars/src/types";
-
-type pill = {
-  name: string;
-  id: number;
-  hours: number;
-  minutes: number;
-  selectedStartingDay: string;
-  selectedEndingDay: string;
-  placeboDays: number;
-};
+import { Card, IconButton, Text } from "react-native-paper";
+import { usePillData } from "../context/PillDataContext";
+import { completePeriod } from "../utils/CalculateMiddleDates";
 
 type props = {
   onClose: () => void;
-  pillData: pill;
-  middleDates: MarkedDates;
 };
 
-export default function PillCard({ onClose, pillData, middleDates }: props) {
+const pad = (num: number) => num.toString().padStart(2, "0");
+
+export default function PillCard({ onClose }: props) {
+  const pillData = usePillData();
+
+  const middleDates = completePeriod(
+    pillData.selectedStartingDay,
+    pillData.selectedEndingDay,
+    pillData.placeboDays
+  );
+
   return (
     <View>
       <Card>
@@ -39,10 +32,7 @@ export default function PillCard({ onClose, pillData, middleDates }: props) {
         <Card.Content style={style.cardheader}>
           <Text variant="titleLarge">{pillData.name}</Text>
           <Text style={style.hour}>
-            {pillData.hours.toString().padStart(2, "0") +
-              ":" +
-              pillData.minutes.toString().padStart(2, "0") +
-              " hs"}
+            {`${pad(pillData.hours)}:${pad(pillData.minutes)} hs`}
           </Text>
         </Card.Content>
         <Card.Content>

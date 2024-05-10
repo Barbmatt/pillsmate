@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { Button, IconButton, PaperProvider, Text } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import PillCalendar from "./UI Components/Calendar";
-import PlaceboDays from "./UI Components/PlaceboDays";
-import Time from "./UI Components/Time";
-import Storage from "./Storage";
-import { completePeriod } from "./Utils/CalculateMiddleDates";
+import PillCalendar from "../components/PillCalendar";
+import PlaceboDays from "../components/PlaceboDays";
+import Time from "../components/Time";
+import Storage from "../../Storage";
+import { completePeriod } from "../utils/CalculateMiddleDates";
+import { usePillDataDispatch } from "../context/PillDataContext";
 
 type props = {
   onClose: () => void;
@@ -19,6 +20,7 @@ export default function NewPillForm(props: props) {
   const [placeboDays, setPlaceboDays] = useState(0);
   const [hours, setHours] = useState(0);
   const [minutes, setMinutes] = useState(0);
+  const dispatch = usePillDataDispatch();
 
   const pill = {
     name: "Jade MD 24",
@@ -32,7 +34,10 @@ export default function NewPillForm(props: props) {
   };
 
   const SavePillCalendar = () => {
-    Storage.save({ key: "pill2", data: pill });
+    dispatch({
+      type: "set",
+      payload: pill,
+    });
     props.onClose();
   };
 
