@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Notification from "../components/Notification";
 import PillCard from "../components/PillCard";
+import PillTakenButton from "../components/PillTakenButton";
 import { usePillData, usePillDataDispatch } from "../context/PillDataContext";
-import { completePeriod } from "../utils/CalculateMiddleDates";
-import Storage from "../../Storage";
 import NewPillForm from "./NewPillForm";
 
 export function Home() {
@@ -27,10 +25,10 @@ export function Home() {
           {pillData.name !== "" ? (
             <View>
               <PillCard onClose={() => setDisplayCards(false)} />
-              <Notification />
+              <PillTakenButton />
             </View>
           ) : (
-            <Text>"There are any pills configured"</Text>
+            <Text>"There are no pills configured"</Text>
           )}
         </View>
       )}

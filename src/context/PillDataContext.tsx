@@ -8,6 +8,15 @@ import {
 } from "react";
 import Storage from "../../Storage";
 
+export type Notification = {
+  id: string;
+  date: {
+    year: number;
+    month: number;
+    day: number;
+  };
+};
+
 export type PillData = {
   id: number;
   name: string;
@@ -16,13 +25,15 @@ export type PillData = {
   selectedStartingDay: string;
   selectedEndingDay: string;
   placeboDays: number;
-  notificationId: string;
+  notifications: Notification[];
 };
 
-type PillDataAction = {
-  type: "set";
-  payload: PillData;
-};
+type PillDataAction =
+  | { type: "set"; payload: PillData }
+  | {
+      type: "cancelNotifications";
+      payload: Notification[];
+    };
 
 const PillDataContext = createContext<PillData>({} as PillData);
 const PillDataDispatchContext = createContext<Dispatch<PillDataAction>>(
@@ -63,7 +74,18 @@ function pillDataReducer(pillData: PillData, action: PillDataAction): PillData {
   switch (action.type) {
     case "set": {
       Storage.save({ key: "pill2", data: action.payload });
-      return action.payload;
+      return action.payload; //para actualizar el estado actual de PillData.
+    }
+    case "cancelNotifications": {
+      const notifications = pillData.notifications.filter(
+        (n, index) => n.id != action.payload[index].id
+      );
+      const newPillData = {
+        ...pillData,
+        notifications: notifications,
+      };
+      Storage.save({ key: "pill2", data: newPillData });
+      return newPillData;
     }
     default: {
       throw Error("Unknown action: " + action);
@@ -79,5 +101,5 @@ const initialPillData: PillData = {
   selectedStartingDay: "",
   selectedEndingDay: "",
   placeboDays: 0,
-  notificationId: "",
+  notifications: [],
 };

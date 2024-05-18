@@ -7,7 +7,8 @@ import PlaceboDays from "../components/PlaceboDays";
 import Time from "../components/Time";
 import Storage from "../../Storage";
 import { completePeriod } from "../utils/CalculateMiddleDates";
-import { usePillDataDispatch } from "../context/PillDataContext";
+import { PillData, usePillDataDispatch } from "../context/PillDataContext";
+import { schedulePushNotification } from "../utils/setNotification";
 
 type props = {
   onClose: () => void;
@@ -22,7 +23,7 @@ export default function NewPillForm(props: props) {
   const [minutes, setMinutes] = useState(0);
   const dispatch = usePillDataDispatch();
 
-  const pill = {
+  const pill: PillData = {
     name: "Jade MD 24",
     id: 7,
     hours,
@@ -30,14 +31,19 @@ export default function NewPillForm(props: props) {
     selectedStartingDay,
     selectedEndingDay,
     placeboDays,
-    notificationId: "",
+    notifications: [],
   };
 
-  const SavePillCalendar = () => {
+  const SavePillCalendar = async () => {
+    const ids = await schedulePushNotification(pill);
+
+    pill.notifications = ids;
+
     dispatch({
       type: "set",
       payload: pill,
     });
+
     props.onClose();
   };
 
@@ -74,10 +80,7 @@ export default function NewPillForm(props: props) {
           setMinutes={setMinutes}
         ></Time>
       ) : null}
-      <Button
-        onPress={SavePillCalendar}
-        disabled={selectedEndingDay !== "" ? false : true}
-      >
+      <Button onPress={SavePillCalendar} disabled={selectedEndingDay === ""}>
         Save Pill Calendar
       </Button>
       <Button onPress={props.onClose}>Close</Button>
