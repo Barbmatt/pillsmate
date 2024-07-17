@@ -6,6 +6,9 @@ import PillCard from "../components/PillCard";
 import PillTakenButton from "../components/PillTakenButton";
 import { usePillData, usePillDataDispatch } from "../context/PillDataContext";
 import NewPillForm from "./NewPillForm";
+import { es, registerTranslation } from "react-native-paper-dates";
+
+registerTranslation("es", es);
 
 export function Home() {
   const insets = useSafeAreaInsets();

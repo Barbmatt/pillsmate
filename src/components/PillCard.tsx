@@ -48,6 +48,7 @@ export default function PillCard({ onClose }: props) {
                 endingDay: true,
                 color: pillData.placeboDays !== 0 ? "pink" : "lightblue",
               },
+              [new Date().toISOString().substring(0, 10)]: { color: "salmon" },
             }}
           ></Calendar>
         </Card.Content>

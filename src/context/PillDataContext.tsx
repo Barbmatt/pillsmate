@@ -10,11 +10,7 @@ import Storage from "../../Storage";
 
 export type Notification = {
   id: string;
-  date: {
-    year: number;
-    month: number;
-    day: number;
-  };
+  date: number; // date.getTime()
 };
 
 export type PillData = {
@@ -28,7 +24,7 @@ export type PillData = {
   notifications: Notification[];
 };
 
-type PillDataAction =
+export type PillDataAction =
   | { type: "set"; payload: PillData }
   | {
       type: "cancelNotifications";
@@ -77,9 +73,10 @@ function pillDataReducer(pillData: PillData, action: PillDataAction): PillData {
       return action.payload; //para actualizar el estado actual de PillData.
     }
     case "cancelNotifications": {
-      const notifications = pillData.notifications.filter(
-        (n, index) => n.id != action.payload[index].id
-      );
+      const notifications = pillData.notifications.filter((n) => {
+        return action.payload.find((np) => np.id === n.id) === undefined;
+      });
+
       const newPillData = {
         ...pillData,
         notifications: notifications,

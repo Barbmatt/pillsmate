@@ -52,6 +52,7 @@ export default function PillCalendar({
             endingDay: true,
             color: placeboDays !== 0 ? "pink" : "lightblue",
           },
+          [new Date().toISOString().substring(0, 10)]: { color: "salmon" },
         }}
       ></Calendar>
     </View>

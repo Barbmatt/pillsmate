@@ -24,12 +24,12 @@ export default function Time(props: props) {
   return (
     <View>
       <TimePickerModal
-        locale="us"
+        locale="es"
         visible
         onDismiss={props.onDismiss}
         onConfirm={({ hours, minutes }) => saveTimeData({ hours, minutes })}
-        hours={11}
-        minutes={9}
+        hours={new Date().getHours()}
+        minutes={new Date().getMinutes()}
         use24HourClock
       ></TimePickerModal>
     </View>

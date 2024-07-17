@@ -1,5 +1,6 @@
 import * as Notifications from "expo-notifications";
 import {
+  allDates,
   completePeriod,
   markedDatesToArray,
 } from "../utils/CalculateMiddleDates";
@@ -14,7 +15,7 @@ import { PillData } from "../context/PillDataContext";
 // }); //no entiendo cuando se usa esto.
 
 export const schedulePushNotification = async (pillData: PillData) => {
-  const marked = completePeriod(
+  const marked = allDates(
     pillData.selectedStartingDay,
     pillData.selectedEndingDay,
     pillData.placeboDays
@@ -25,10 +26,11 @@ export const schedulePushNotification = async (pillData: PillData) => {
   Notifications.cancelAllScheduledNotificationsAsync(); //esto por que aca?
 
   const promises = days.map((day) => {
-    const date = day;
-
-    date.setHours(pillData.hours);
-    date.setMinutes(pillData.minutes);
+    const date = new Date(
+      `${day.toISOString().substring(0, 10)} ${pillData.hours}:${
+        pillData.minutes
+      }`
+    );
 
     return Notifications.scheduleNotificationAsync({
       content: {
@@ -45,17 +47,14 @@ export const schedulePushNotification = async (pillData: PillData) => {
   const ids = await Promise.all(promises);
 
   const notifications = days.map((day, index) => {
-    const date = day;
-
-    date.setHours(pillData.hours);
-    date.setMinutes(pillData.minutes);
+    const date = new Date(
+      `${day.toISOString().substring(0, 10)} ${pillData.hours}:${
+        pillData.minutes
+      }`
+    );
 
     return {
-      date: {
-        year: date.getFullYear(),
-        month: date.getMonth(), //va entre 0 y 11
-        day: date.getDay(),
-      },
+      date: date.getTime(),
       id: ids[index],
     };
   });

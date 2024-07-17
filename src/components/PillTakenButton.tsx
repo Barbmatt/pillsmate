@@ -2,30 +2,25 @@ import * as Notifications from "expo-notifications";
 import { Button } from "react-native-paper";
 import {
   Notification,
-  PillData,
+  PillDataAction,
   usePillData,
   usePillDataDispatch,
 } from "../context/PillDataContext";
-import { useEffect } from "react";
 
-var id = "";
-
-async function cancelNotifications(notifications: Notification[], date: Date) {
-  const dispatch = usePillDataDispatch();
-
+async function cancelNotifications(
+  notifications: Notification[],
+  date: Date,
+  dispatch: React.Dispatch<PillDataAction>
+) {
   const notificationsToCancel = notifications.filter((notification) => {
-    return (
-      new Date(
-        notification.date.day,
-        notification.date.month,
-        notification.date.year
-      ) <= date
-    );
+    return new Date(notification.date) <= date;
   }); //filtra las notificaciones que cumplen con la condicion del return.
 
-  notificationsToCancel.forEach((element) => {
-    Notifications.cancelScheduledNotificationAsync(element.id);
-  });
+  // notificationsToCancel.forEach(async (element) => {
+  //   await Notifications.cancelScheduledNotificationAsync(element.id);
+  // });
+
+  await Notifications.dismissAllNotificationsAsync();
 
   dispatch({ type: "cancelNotifications", payload: notificationsToCancel });
 
@@ -33,12 +28,13 @@ async function cancelNotifications(notifications: Notification[], date: Date) {
 }
 
 export default function PillTakenButton() {
+  const dispatch = usePillDataDispatch();
   const pillData = usePillData();
 
   return (
     <Button
       onPress={async () =>
-        await cancelNotifications(pillData.notifications, new Date())
+        await cancelNotifications(pillData.notifications, new Date(), dispatch)
       }
     >
       Pill Taken
