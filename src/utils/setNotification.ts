@@ -6,14 +6,6 @@ import {
 } from "../utils/CalculateMiddleDates";
 import { PillData } from "../context/PillDataContext";
 
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowAlert: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: true,
-//   }),
-// }); //no entiendo cuando se usa esto.
-
 export const schedulePushNotification = async (pillData: PillData) => {
   const marked = allDates(
     pillData.selectedStartingDay,
@@ -23,7 +15,7 @@ export const schedulePushNotification = async (pillData: PillData) => {
 
   const days = markedDatesToArray(marked);
 
-  Notifications.cancelAllScheduledNotificationsAsync(); //esto por que aca?
+  Notifications.cancelAllScheduledNotificationsAsync();
 
   const promises = days.map((day) => {
     const date = new Date(
